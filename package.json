@@ -1,0 +1,26 @@
+{
+  "name": "alpr-server",
+  "version": "1.0.0",
+  "description": "NodeJS server for OpenALPR",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "OpenALPR",
+    "license",
+    "plate"
+  ],
+  "author": "samuel.brezani@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "http-shutdown": "^1.1.0",
+    "request": "^2.79.0",
+    "tmp-promise": "^1.0.3"
+  }
+}
