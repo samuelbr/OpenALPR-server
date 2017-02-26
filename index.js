@@ -65,7 +65,7 @@ var downloadFile = function(uri, tmpFile, countryCode) {
                 writeStream.end();
                 resolve({
                     filepath: tmpFile,
-                    countrycode: countryCode
+                    countrycode: countryCode || 'eu'
                 });
             })
             .on('error', reject);
