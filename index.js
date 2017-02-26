@@ -22,7 +22,7 @@ var validateRequest = function(request, response) {
     }
     
     const supportedTypes = ['jpg', 'jpeg'];
-    const countryCodes = ['us', 'eu'];
+    const countryCodes = ['us', 'eu', 'gb'];
     const regexType = /\.(\w+)$/;
     const match = regexType.exec(imageUrl.toLowerCase());
     
