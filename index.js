@@ -22,7 +22,7 @@ var validateRequest = function(request, response) {
     }
     
     const supportedTypes = ['jpg', 'jpeg'];
-    const countryCodes = ['us', 'eu'];
+    const countryCodes = ['us', 'eu', 'gb'];
     const regexType = /\.(\w+)$/;
     const match = regexType.exec(imageUrl.toLowerCase());
     
@@ -52,7 +52,7 @@ var createTempFile = function(postfix) {
     return tmp.file({postfix: postfix});
 };
 
-var downloadFile = function(uri, tmpFile) {
+var downloadFile = function(uri, tmpFile, countryCode) {
     return new Promise(function(resolve, reject){
         console.log("Download %s to %s", uri, tmpFile);
         writeStream = fs.createWriteStream(tmpFile);
@@ -63,16 +63,19 @@ var downloadFile = function(uri, tmpFile) {
             .on('close', function() {
                 //close stream - flush data to drive
                 writeStream.end();
-                resolve(tmpFile);
+                resolve({
+                    filepath: tmpFile,
+                    countrycode: countryCode || 'eu'
+                });
             })
             .on('error', reject);
     });
 };
 
-var runAlpr = function(filepath) {
+var runAlpr = function(result) {
     return new Promise(function(resolve, reject) {
-        console.log("Run alpr for %s", filepath);
-        const alpr = spawn('alpr', ['-j', '-c', 'eu', '-p', 'sk', filepath]);
+        console.log("Run alpr for %s", result.filepath);
+        const alpr = spawn('alpr', ['-j', '-c', result.countrycode, '-p', 'sk', result.filepath]);
         var outputData = "";
         alpr.on('error', reject);
         alpr.stdout.on('data', function(data) {
@@ -92,7 +95,7 @@ var handleValidRequest = function(params, response) {
     return createTempFile('.'+params['type'])
         .then(function(file) {
             tmpFile = file;
-            return downloadFile(params.url, file.path);
+            return downloadFile(params.url, file.path, params['country_code']);
         })
         .then(runAlpr)
         .then(function(data) {
