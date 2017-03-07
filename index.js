@@ -16,7 +16,8 @@ var validateRequest = function(request, response) {
     var imageUrl = urlParts.query['image_url'];
     
     if (urlParts.pathname !== '/') {
-        throw new Error('Invalid path');
+        return null;
+
     } else if (!imageUrl) {
         throw new Error('Missing required parameter');
     }
@@ -118,10 +119,15 @@ var handleError = function(response, msg) {
 function handleRequest(request, response){
     try {
         const params = validateRequest(request, response);
-        handleValidRequest(params, response)
-            .catch(function(e){
-                handleError(response, e);
-            });
+        if (params) {
+            handleValidRequest(params, response)
+                .catch(function(e){
+                    handleError(response, e);
+                });
+        } else {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end();
+        }
     } catch(e) {
         handleError(response, e);
     }  
@@ -134,5 +140,5 @@ server = httpShutdown(server);
 //Lets start our server
 server.listen(PORT, function(){
     //Callback triggered when server is successfully listening. Hurray!
-    console.log("Server listening on X: http://localhost:%s", PORT);
+    console.log("Server listening on: http://localhost:%s", PORT);
 });
