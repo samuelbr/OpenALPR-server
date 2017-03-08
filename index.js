@@ -57,18 +57,16 @@ var downloadFile = function(uri, tmpFile, countryCode) {
     return new Promise(function(resolve, reject){
         console.log("Download %s to %s", uri, tmpFile);
         writeStream = fs.createWriteStream(tmpFile);
-        req(uri)
-            .pipe(writeStream)
-            .on('error', reject);
         writeStream
-            .on('close', function() {
-                //close stream - flush data to drive
-                writeStream.end();
+            .on('finish', function() {
                 resolve({
                     filepath: tmpFile,
                     countrycode: countryCode || 'eu'
                 });
             })
+            .on('error', reject);
+        req(uri)
+            .pipe(writeStream)
             .on('error', reject);
     });
 };
