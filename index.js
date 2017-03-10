@@ -153,11 +153,45 @@ var handleValidPostRequest = function (request, response, params) {
             })
             .on('end', function () {
                 response.writeHead(200);
-                response.end("post ok! got this data: " + body);
-                resolve();
+
+                var tmpFile;
+                return createTempFile('.jpg')
+                    .then(function (file) {
+                        tmpFile = file;
+
+                        return saveToDisk(body, file.path, params['country_code']);
+                    })
+                    .then(runAlpr)
+                    .then(function (data) {
+                        response.end(data);
+                    })
+                    .finally(function () {
+                        fs.unlink(tmpFile.path, function (err) {
+                            console.log('Cleaned up %s - %s', tmpFile.path, err);
+                        });
+
+                        resolve();
+                    });
             });
     });
 }
+
+var saveToDisk = function (data, tmpFile, countryCode) {
+    return new Promise(function (resolve, reject) {
+        console.log("Saving data to %s", tmpFile);
+
+        fs.writeFile(tmpFile, data, 'binary', function (err) {
+            if (err){
+                reject(err);
+            }
+            
+            resolve({
+                filepath: tmpFile,
+                countrycode: countryCode || 'eu'
+            });
+        });
+    });
+};
 
 var handleError = function (response, msg) {
     console.error(msg);
