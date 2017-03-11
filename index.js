@@ -146,31 +146,30 @@ var handleValidGetRequest = function (request, response, params) {
 
 var handleValidPostRequest = function (request, response, params) {
     return new Promise(function (resolve, reject) {
-        var body = "";
+        var data = new Buffer('');
         request
             .on('data', function (chunk) {
-                body += chunk;
+                data = Buffer.concat([data, chunk]);
             })
             .on('end', function () {
                 response.writeHead(200);
-
+                
                 var tmpFile;
                 return createTempFile('.jpg')
                     .then(function (file) {
                         tmpFile = file;
 
-                        return saveToDisk(body, file.path, params['country_code']);
+                        return saveToDisk(data, file.path, params['country_code']);
                     })
                     .then(runAlpr)
                     .then(function (data) {
                         response.end(data);
+                        resolve();
                     })
                     .finally(function () {
                         fs.unlink(tmpFile.path, function (err) {
                             console.log('Cleaned up %s - %s', tmpFile.path, err);
-                        });
-
-                        resolve();
+                        });                        
                     });
             });
     });
