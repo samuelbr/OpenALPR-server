@@ -70,8 +70,6 @@ var validatePostRequest = function (request, response) {
         result['country_code'] = urlParts.query['country_code'];
     }
 
-    // check to see if any content was sent? error if not?
-
     return result;
 }
 
