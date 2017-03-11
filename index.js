@@ -135,6 +135,7 @@ var handleValidGetRequest = function (request, response, params) {
         })
         .then(runAlpr)
         .then(function (data) {
+            response.writeHead(200, { "Content-Type": "application/json" });
             response.end(data);
         })
         .finally(function () {
@@ -152,8 +153,6 @@ var handleValidPostRequest = function (request, response, params) {
                 data = Buffer.concat([data, chunk]);
             })
             .on('end', function () {
-                response.writeHead(200);
-                
                 var tmpFile;
                 return createTempFile('.jpg')
                     .then(function (file) {
@@ -163,6 +162,7 @@ var handleValidPostRequest = function (request, response, params) {
                     })
                     .then(runAlpr)
                     .then(function (data) {
+                        response.writeHead(200, { "Content-Type": "application/json" });
                         response.end(data);
                         resolve();
                     })
