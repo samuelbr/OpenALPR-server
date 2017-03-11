@@ -5,4 +5,5 @@ NodeJS server for OpenALPR.
 docker run -p 8080:8080 samuelbr/openalpr-server
 
 # Making a request
-GET http://localhost:8080/?image_url=http://www.example.com/yourimage.jpg&type=eu
+curl -X GET http://localhost:8080/?image_url=http://www.example.com/yourimage.jpg&type=eu
+curl -X POST --data-binary "@yourimage.jpg" http://localhost:8080/?country_code=gb
